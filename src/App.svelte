@@ -1,6 +1,7 @@
 <script>
 	import Product from "./Product.svelte";
 	import Modal from "./Modal.svelte";
+	import { tick } from "svelte";
 
 	const addToCart = (event) => {
 		console.log(event);
@@ -19,8 +20,28 @@
 		}
 	];
 
+	const transform = async (evt) => {
+		if (evt.which !== 9) return;
+
+		evt.preventDefault();
+
+		const selectionStart = evt.target.selectionStart;
+		const selectionEnd = evt.target.selectionEnd;
+		const value = evt.target.value;
+
+		text = value.slice(0, selectionStart) +
+			   value.slice(selectionStart, selectionEnd).toUpperCase() +
+			   value.slice(selectionEnd); 
+
+		await tick();
+
+		evt.target.selectionStart = selectionStart;
+		evt.target.selectionEnd = selectionEnd;
+	};
+
 	let showModal = false;
 	let closeable = false;
+	let text = "This is how it works!";
 
 </script>
 
@@ -49,6 +70,8 @@
 	<button slot="footer" on:click={() => showModal = false} disabled={!closeable}>Confirm</button>
 </Modal>
 {/if}
+
+<textarea rows="10" value={text} on:keydown="{transform}"></textarea>
 
 
 
